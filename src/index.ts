@@ -1,19 +1,25 @@
-import express from 'express';
+import express from "express";
+import dotenv from "dotenv-safe";
+import cors from "cors";
 
 const app = express();
-const PORT = process.env.PORT || 8000;
 
-// Middleware
+app.use(express.urlencoded({ extended: false }));
+app.use(cors());
 app.use(express.json());
 
-// Health check route
-app.get('/', (req, res) => {
-  res.json({ message: 'Booking Website API is running!' });
+dotenv.config();
+
+const desiredPort = Number(process.env.PORT ?? 8000);
+
+app.get("/healthcheck", (_req, res) => {
+  res.status(200).json({ message: "Booking Website API is running!" });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+const server = app.listen(desiredPort, () => {
+  const addr = server.address();
+  const actualPort = typeof addr === "object" && addr ? addr.port : desiredPort;
+  console.log(`Server listening on http://localhost:${actualPort}`);
 });
 
 export default app;
