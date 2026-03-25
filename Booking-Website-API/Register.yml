@@ -8,12 +8,12 @@ http:
   url: http://localhost:8000/auth/register
   body:
     type: json
-    data: |
+    data: |-
       {
-        "name": "Test User",
-        "email": "test@test.com",
+        "name": "Admin User",
+        "email": "admin@test.com",
         "password": "password123",
-        "role": "user"
+        "role": "admin"
       }
   auth: inherit
 

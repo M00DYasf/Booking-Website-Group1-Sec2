@@ -1,0 +1,17 @@
+info:
+  name: Accept Booking
+  type: http
+  seq: 7
+
+http:
+  method: PUT
+  url: http://localhost:8000/admin/bookings/69c3561b2a07912227775b8b/accept
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YzMwYTNkZGFiMGQ1Yzc2ZDM3YTIwZCIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc3NDM4OTg4OSwiZXhwIjoxNzc0OTk0Njg5fQ.SrChNEKXxAgIHS2RTKr2Fp7u-x5aWDpG94hfr0PJYKk
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

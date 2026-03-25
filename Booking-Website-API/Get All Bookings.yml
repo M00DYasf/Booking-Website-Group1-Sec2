@@ -1,0 +1,17 @@
+info:
+  name: Get All Bookings
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: http://localhost:8000/admin/bookings
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YzMwYTNkZGFiMGQ1Yzc2ZDM3YTIwZCIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc3NDM4OTg4OSwiZXhwIjoxNzc0OTk0Njg5fQ.SrChNEKXxAgIHS2RTKr2Fp7u-x5aWDpG94hfr0PJYKk
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

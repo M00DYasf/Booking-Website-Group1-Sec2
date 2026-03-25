@@ -17,4 +17,8 @@ const findUserByEmail = async (email: string) => {
   return User.findOne({ email });
 };
 
-export default { registerUser, findUserByEmail };
+const findUserById = async (id: string) => {
+  return User.findById(id);
+};
+
+export default { registerUser, findUserByEmail, findUserById };

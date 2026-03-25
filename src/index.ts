@@ -3,6 +3,7 @@ import dotenv from "dotenv-safe";
 import cors from "cors";
 import connectDB from "./infrastructure/mongodb/connection";
 import authRoutes from "./ports/rest/routes/auth";
+import adminRoutes from "./ports/rest/routes/admin";
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.get("/healthcheck", (_req, res) => {
   res.status(200).json({ message: "Booking Website API is running!" });
 });
 
+app.use("/admin", adminRoutes);
 app.use("/auth", authRoutes);
 
 const desiredPort = Number(process.env.PORT ?? 8000);
