@@ -49,4 +49,24 @@ describe("register controller", () => {
       })
     ).rejects.toThrow("Password must be at least 6 characters");
   });
+
+  it("should register a user successfully", async () => {
+    jest.spyOn(userQueries, "findUserByEmail").mockResolvedValue(null);
+    jest.spyOn(userQueries, "registerUser").mockResolvedValue({ 
+      _id: "123", 
+      name: "John", 
+      email: "john@test.com", 
+      role: "user" 
+    } as any);
+
+    const result = await register(mockDependencies)({ 
+      name: "John", 
+      email: "john@test.com", 
+      password: "password123" 
+    });
+
+    expect(result).toHaveProperty("_id");
+    expect(result.email).toBe("john@test.com");
+  });
+
 });
