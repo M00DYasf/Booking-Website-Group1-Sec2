@@ -37,4 +37,16 @@ describe("register controller", () => {
       })
     ).rejects.toThrow("Name, email and password are required");
   });
+
+  it("should throw an error if password is less than 6 characters", async () => {
+    jest.spyOn(userQueries, "findUserByEmail").mockResolvedValue(null);
+
+    await expect(
+      register(mockDependencies)({ 
+        name: "John", 
+        email: "john@test.com", 
+        password: "123" 
+      })
+    ).rejects.toThrow("Password must be at least 6 characters");
+  });
 });
