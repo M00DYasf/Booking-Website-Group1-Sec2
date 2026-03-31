@@ -1,5 +1,6 @@
-import { register } from "../controllers/auth";
+import { register, login } from "../controllers/auth";
 import userQueries from "../infrastructure/mongodb/queries/user";
+import bcrypt from "bcrypt";
 
 const mockDependencies = {
   mongoDbClient: {
@@ -68,5 +69,19 @@ describe("register controller", () => {
     expect(result).toHaveProperty("_id");
     expect(result.email).toBe("john@test.com");
   });
+});
 
+describe("login controller", () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it("should throw an error if email or password is missing", async () => {
+    await expect(
+      login(mockDependencies)({ 
+        email: "", 
+        password: "" 
+      })
+    ).rejects.toThrow("Email and password are required");
+  });
 });
