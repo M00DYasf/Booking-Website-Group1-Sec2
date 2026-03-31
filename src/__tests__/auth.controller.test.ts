@@ -25,4 +25,16 @@ describe("register controller", () => {
       })
     ).rejects.toThrow("User already exists with this email");
   });
+
+  it("should throw an error if name, email or password is missing", async () => {
+    jest.spyOn(userQueries, "findUserByEmail").mockResolvedValue(null);
+
+    await expect(
+      register(mockDependencies)({ 
+        name: "", 
+        email: "john@test.com", 
+        password: "password123" 
+      })
+    ).rejects.toThrow("Name, email and password are required");
+  });
 });
