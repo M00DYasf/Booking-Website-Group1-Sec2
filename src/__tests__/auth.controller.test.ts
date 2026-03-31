@@ -84,4 +84,15 @@ describe("login controller", () => {
       })
     ).rejects.toThrow("Email and password are required");
   });
+
+  it("should throw an error if user is not found", async () => {
+    jest.spyOn(userQueries, "findUserByEmail").mockResolvedValue(null);
+
+    await expect(
+      login(mockDependencies)({ 
+        email: "notfound@test.com", 
+        password: "password123" 
+      })
+    ).rejects.toThrow("Invalid email or password");
+  });
 });
