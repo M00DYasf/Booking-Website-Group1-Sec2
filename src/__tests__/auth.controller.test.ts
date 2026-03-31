@@ -110,4 +110,22 @@ describe("login controller", () => {
       })
     ).rejects.toThrow("Invalid email or password");
   });
+
+  it("should login successfully and return a token", async () => {
+    jest.spyOn(userQueries, "findUserByEmail").mockResolvedValue({ 
+      _id: "123",
+      email: "john@test.com", 
+      password: "hashedpassword",
+      role: "user"
+    } as any);
+    jest.spyOn(bcrypt, "compare").mockResolvedValue(true as never);
+
+    const result = await login(mockDependencies)({ 
+      email: "john@test.com", 
+      password: "password123" 
+    });
+
+    expect(result).toHaveProperty("token");
+    expect(result.user.email).toBe("john@test.com");
+  });
 });
