@@ -1,6 +1,15 @@
 import request from "supertest";
 import app from "../index";
 
+let adminToken: string;
+
+beforeAll(async () => {
+  const loginResponse = await request(app)
+    .post("/auth/login")
+    .send({ email: "admin@test.com", password: "password123" });
+  adminToken = loginResponse.body.token;
+});
+
 describe("POST /auth/register", () => {
   it("should return 400 if required fields are missing", async () => {
     const response = await request(app)
@@ -47,15 +56,9 @@ describe("GET /admin/bookings", () => {
   });
 
   it("should return 200 if valid admin token is provided", async () => {
-    const loginResponse = await request(app)
-      .post("/auth/login")
-      .send({ email: "admin@test.com", password: "password123" });
-
-    const token = loginResponse.body.token;
-
     const response = await request(app)
       .get("/admin/bookings")
-      .set("Authorization", `Bearer ${token}`);
+      .set("Authorization", `Bearer ${adminToken}`);
 
     expect(response.status).toBe(200);
   });
@@ -68,6 +71,14 @@ describe("PUT /admin/bookings/:id/accept", () => {
 
     expect(response.status).toBe(401);
   });
+
+  it("should return 400 if booking not found", async () => {
+    const response = await request(app)
+      .put("/admin/bookings/69c3561b2a07912227775b8b/accept")
+      .set("Authorization", `Bearer ${adminToken}`);
+
+    expect(response.status).toBe(400);
+  });
 });
 
 describe("PUT /admin/bookings/:id/decline", () => {
@@ -77,6 +88,14 @@ describe("PUT /admin/bookings/:id/decline", () => {
 
     expect(response.status).toBe(401);
   });
+
+  it("should return 400 if booking not found", async () => {
+    const response = await request(app)
+      .put("/admin/bookings/69c3561b2a07912227775b8b/decline")
+      .set("Authorization", `Bearer ${adminToken}`);
+
+    expect(response.status).toBe(400);
+  });
 });
 
 describe("PUT /admin/bookings/:id/edit", () => {
@@ -85,5 +104,14 @@ describe("PUT /admin/bookings/:id/edit", () => {
       .put("/admin/bookings/123/edit");
 
     expect(response.status).toBe(401);
+  });
+
+  it("should return 400 if booking not found", async () => {
+    const response = await request(app)
+      .put("/admin/bookings/69c3561b2a07912227775b8b/edit")
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({ roomNumber: 202 });
+
+    expect(response.status).toBe(200);
   });
 });
