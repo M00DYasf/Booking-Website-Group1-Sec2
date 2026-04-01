@@ -15,4 +15,15 @@ describe("acceptBooking controller", () => {
       acceptBooking(mockDependencies)("123")
     ).rejects.toThrow("Booking not found");
   });
+
+  it("should throw an error if booking is not pending", async () => {
+    jest.spyOn(bookingQueries, "findBookingById").mockResolvedValue({ 
+      _id: "123", 
+      status: "accepted" 
+    } as any);
+
+    await expect(
+      acceptBooking(mockDependencies)("123")
+    ).rejects.toThrow("Only pending bookings can be accepted");
+  });
 });
