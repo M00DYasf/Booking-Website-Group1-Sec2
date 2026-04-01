@@ -27,6 +27,15 @@ describe("POST /auth/login", () => {
 
     expect(response.status).toBe(401);
   });
+
+  it("should return 200 and token on valid credentials", async () => {
+    const response = await request(app)
+      .post("/auth/login")
+      .send({ email: "admin@test.com", password: "password123" });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("token");
+  });
 });
 
 describe("GET /admin/bookings", () => {
@@ -35,6 +44,20 @@ describe("GET /admin/bookings", () => {
       .get("/admin/bookings");
 
     expect(response.status).toBe(401);
+  });
+
+  it("should return 200 if valid admin token is provided", async () => {
+    const loginResponse = await request(app)
+      .post("/auth/login")
+      .send({ email: "admin@test.com", password: "password123" });
+
+    const token = loginResponse.body.token;
+
+    const response = await request(app)
+      .get("/admin/bookings")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
   });
 });
 
