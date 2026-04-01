@@ -1,4 +1,4 @@
-import { acceptBooking, declineBooking } from "../controllers/booking";
+import { acceptBooking, declineBooking, editBooking, getAllBookings } from "../controllers/booking";
 import bookingQueries from "../infrastructure/mongodb/queries/booking";
 
 const mockDependencies = {};
@@ -38,7 +38,6 @@ describe("acceptBooking controller", () => {
     } as any);
 
     const result = await acceptBooking(mockDependencies)("123");
-
     expect(result).toHaveProperty("status", "accepted");
   });
 });
@@ -78,7 +77,50 @@ describe("declineBooking controller", () => {
     } as any);
 
     const result = await declineBooking(mockDependencies)("123");
-
     expect(result).toHaveProperty("status", "declined");
+  });
+});
+
+describe("editBooking controller", () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it("should throw an error if booking is not found", async () => {
+    jest.spyOn(bookingQueries, "findBookingById").mockResolvedValue(null);
+
+    await expect(
+      editBooking(mockDependencies)("123", { roomNumber: 202 })
+    ).rejects.toThrow("Booking not found");
+  });
+
+  it("should edit a booking successfully", async () => {
+    jest.spyOn(bookingQueries, "findBookingById").mockResolvedValue({ 
+      _id: "123", 
+      status: "pending" 
+    } as any);
+    jest.spyOn(bookingQueries, "updateBooking").mockResolvedValue({ 
+      _id: "123", 
+      roomNumber: 202 
+    } as any);
+
+    const result = await editBooking(mockDependencies)("123", { roomNumber: 202 });
+    expect(result).toHaveProperty("roomNumber", 202);
+  });
+});
+
+describe("getAllBookings controller", () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it("should return all bookings successfully", async () => {
+    jest.spyOn(bookingQueries, "findAllBookings").mockResolvedValue([
+      { _id: "123", status: "pending" },
+      { _id: "456", status: "accepted" }
+    ] as any);
+
+    const result = await getAllBookings(mockDependencies)();
+    expect(result).toHaveLength(2);
   });
 });
