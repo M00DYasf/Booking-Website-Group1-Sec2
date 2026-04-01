@@ -1,8 +1,12 @@
 import { Booking } from "../../domain/entities/Booking";
 import { BookingRepository } from "../../domain/repo/BookingRepository";
+import { ActivityLogger } from "./ActivityLogger";
 
 export class BookingEngine {
-  constructor(private bookingRepo: BookingRepository) {}
+  constructor(
+    private bookingRepo: BookingRepository,
+    private activityLogger: ActivityLogger
+  ) {}
 
   private isOverlapping(aStart: Date, aEnd: Date, bStart: Date, bEnd: Date) {
     return aStart < bEnd && aEnd > bStart;
@@ -15,14 +19,12 @@ export class BookingEngine {
     endTime: Date;
     totalUnits: number;
   }) {
-    // 1. Get all bookings for this resource
     const existingBookings = await this.bookingRepo.findByTime(
       data.resourceId,
       data.startTime,
       data.endTime
     );
 
-    // 2. Count overlapping bookings
     let overlappingCount = 0;
 
     for (const booking of existingBookings) {
@@ -38,12 +40,17 @@ export class BookingEngine {
       }
     }
 
-    // 3. Check inventory
     if (overlappingCount >= data.totalUnits) {
+      await this.activityLogger.log(
+        "BOOKING_FAILED",
+        data.userId,
+        "Booking",
+        "No availability for requested time"
+      );
+
       throw new Error("No availability for this time slot.");
     }
 
-    // 4. Create booking
     const booking = new Booking(
       crypto.randomUUID(),
       data.userId,
@@ -54,6 +61,13 @@ export class BookingEngine {
     );
 
     await this.bookingRepo.create(booking);
+
+    await this.activityLogger.log(
+      "CREATE_BOOKING",
+      data.userId,
+      "Booking",
+      `Booking for resource ${data.resourceId} from ${data.startTime} to ${data.endTime}`
+    );
 
     return booking;
   }
