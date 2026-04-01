@@ -1,4 +1,4 @@
-import { acceptBooking } from "../controllers/booking";
+import { acceptBooking, declineBooking } from "../controllers/booking";
 import bookingQueries from "../infrastructure/mongodb/queries/booking";
 
 const mockDependencies = {};
@@ -40,5 +40,19 @@ describe("acceptBooking controller", () => {
     const result = await acceptBooking(mockDependencies)("123");
 
     expect(result).toHaveProperty("status", "accepted");
+  });
+});
+
+describe("declineBooking controller", () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it("should throw an error if booking is not found", async () => {
+    jest.spyOn(bookingQueries, "findBookingById").mockResolvedValue(null);
+
+    await expect(
+      declineBooking(mockDependencies)("123")
+    ).rejects.toThrow("Booking not found");
   });
 });
